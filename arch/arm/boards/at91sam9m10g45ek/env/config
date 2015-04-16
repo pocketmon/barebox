@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# use 'dhcp' to do dhcp in barebox and in kernel
+# use 'none' if you want to skip kernel ip autoconfiguration
+ip=none
+#global.dhcp.vendor_id=none	#BT-8474 remove unnecessary info at console
+
+# or set your networking parameters here
+#eth0.ipaddr=a.b.c.d
+#eth0.netmask=a.b.c.d
+#eth0.gateway=a.b.c.d
+#eth0.serverip=a.b.c.d
+
+# can be either 'nfs', 'tftp' or 'nand'
+kernel_loc=nand
+# can be either 'net', 'nand' or 'initrd'
+rootfs_loc=nand
+# can be either 'nfs', 'tftp', 'nand' or empty
+oftree_loc=
+
+# can be either 'jffs2' or 'ubifs'
+rootfs_type=ubifs
+rootfsimage=root.$rootfs_type
+ubiroot=rootfs
+
+#kernelimage=zImage
+#kernelimage=Image
+#kernelimage=Image.lzo
+
+nor_device=physmap-flash
+nor_parts="3M(kernel),2M(res1),1M(res2),1M(res3),-(res4)"
+
+nand_device=atmel_nand
+#nand_parts="256k(at91bootstrap),256k(barebox)ro,128k(bareboxenv),128k(bareboxenv2),128k(oftree),128k(dummy1),1M(dummy2),6M(kernel),120M(rootfs),-(data)"
+#rootfs_mtdblock_nand=8
+#nand_parts="256k(bootstrap),512k(barebox),1280k(env),6M(kernel),16M(rootfs),32M(firmware),32M(backup),128k(unconfirmBuf),-(reserved)"
+#rootfs_mtdblock_nand=4
+nand_parts="256k(bootstrap),768k(uboot),512k(barebox),1M(env),3M(kernel),32M(rootfs),20M(firmware),20M(firmware-bak),25M(res1),25M(res2),256k(res3),-(res4)"
+rootfs_mtdblock_nand=10
+
+autoboot_timeout=3
+
+#BT8474 remove unnecessary info in console
+bootargs="console=null"
+
+
+# set a fancy prompt (if support is compiled in)
+PS1="\e[1;32mbarebox@\e[1;31m\h:\w\e[0m "
+

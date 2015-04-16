@@ -1,0 +1,25 @@
+#!/bin/sh
+
+PATH=/env/bin
+export PATH
+
+. /env/config
+
+addpart /dev/nand0 $nand_parts
+nand -a /dev/nand0.*
+
+
+rootfs_loc=nand
+kernel_loc=nand
+rootfs_mtdblock=$rootfs_mtdblock_nand
+
+bootargs="$bootargs root=ubi0:$ubiroot ubi.mtd=$rootfs_mtdblock"
+bootargs="mem=32M $bootargs rootfstype=$rootfs_type lpj=995328 quiet"
+#bootargs="mem=32M $bootargs rootfstype=$rootfs_type printk.time=1 debug"
+mtdparts="${mtdparts}${nor_device}:${nor_parts};${nand_device}:${nand_parts}"
+#mtdparts="${mtdparts}${nand_device}:${nand_parts}"
+bootargs="${bootargs} mtdparts=${mtdparts}"
+
+kdev="/dev/kernel0"
+#kdev="/dev/nand0.kernel.bb"
+

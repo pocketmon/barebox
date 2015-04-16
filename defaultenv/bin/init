@@ -1,0 +1,37 @@
+#!/bin/sh
+
+. /env/config
+
+addpart /dev/nand0 $nand_parts
+nand -a /dev/nand0.*
+
+
+rootfs_loc=nand
+kernel_loc=nand
+rootfs_mtdblock=$rootfs_mtdblock_nand
+
+bootargs="$bootargs root=ubi0:$ubiroot ubi.mtd=$rootfs_mtdblock"
+#bootargs="$bootargs root=/dev/mtdblock4"
+
+#bootargs="$bootargs rootfstype=$rootfs_type noinitrd lpj=995328"
+#bootargs="mem=128M $bootargs rootfstype=$rootfs_type lpj=995328 quiet no_console_suspend"
+#bootargs="mem=128M $bootargs rootfstype=$rootfs_type lpj=995328 quiet printk.time=1"
+bootargs="mem=32M $bootargs rootfstype=$rootfs_type printk.time=1 debug"
+#bootargs="mem=32M $bootargs rootfstype=$rootfs_type lpj=995328 quiet"
+#bootargs="mem=128M $bootargs rootfstype=$rootfs_type lpj=995328 printk.time=1"
+
+mtdparts="${mtdparts}${nand_device}:${nand_parts}"
+
+#bootargs="${bootargs} mtdparts=${mtdparts} initcall_debug"
+bootargs="${bootargs} mtdparts=${mtdparts}"
+
+kdev="/dev/nand0.kernel.bb"
+
+echo "booting kernel from $kdev"
+
+#bootm_opt="-a 0x70800000"
+#try to execute the file
+# it does not work as example for /dev as the file is not executable
+#$kdev $bootm_opt
+# fall back on bootm
+#bootm $bootm_opt $kdev

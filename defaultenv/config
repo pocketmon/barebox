@@ -1,0 +1,72 @@
+#!/bin/sh
+hostname=none
+if [ -z "$user" ]; then
+#	user=
+fi
+
+# Enter MAC address here if not retrieved automatically
+#eth0.ethaddr=de:ad:be:ef:00:00
+
+# use 'dhcp' to do dhcp in barebox and in kernel
+# use 'none' if you want to skip kernel ip autoconfiguration
+ip=none
+#global.dhcp.vendor_id=barebox
+# or set your networking parameters here
+#eth0.ipaddr=a.b.c.d
+#eth0.netmask=a.b.c.d
+#eth0.serverip=a.b.c.d
+#eth0.gateway=a.b.c.d
+
+# can be either 'tftp', 'nfs', 'nand', 'nor' or 'disk'
+kernel_loc=nand
+# can be either 'net', 'nand', 'nor', 'disk' or 'initrd'
+rootfs_loc=nand
+# can be either 'tftp', 'nfs', 'nand', 'nor', 'disk' or none
+oftree_loc=none
+# for flash based rootfs: 'jffs2' or 'ubifs'
+# in case of disk any regular filesystem like 'ext2', 'ext3', 'reiserfs'
+rootfs_type=ubifs
+#rootfs_type=jffs2
+ubiroot=rootfs
+# where is the rootfs in case of 'rootfs_loc=disk' (linux name)
+rootfs_part_linux_dev=mmcblk0p4
+rootfsimage=rootfs-${global.hostname}.$rootfs_type
+# where is the kernel image in case of 'kernel_loc=disk'
+kernel_part=disk0.2
+
+kernelimage=zImage
+#kernelimage=uImage-${global.hostname}
+#kernelimage=Image-${global.hostname}
+#kernelimage=Image-${global.hostname}.lzo
+bareboximage=barebox-${global.hostname}.bin
+bareboxenvimage=barebox-${global.hostname}.bin
+
+if [ -n $user ]; then
+	bareboximage="$user"-"$bareboximage"
+	bareboxenvimage="$user"-"$bareboxenvimage"
+	kernelimage="$user"-"$kernelimage"
+	rootfsimage="$user"-"$rootfsimage"
+	nfsroot="/home/$user/nfsroot/${global.hostname}"
+else
+	nfsroot="/path/to/nfs/root"
+fi
+autoboot_timeout=3
+
+bootargs="console=ttyS0,115200"
+
+nor_parts="256k(barebox)ro,128k(bareboxenv),3M(kernel),-(root)"
+rootfs_mtdblock_nor=3
+#nand_parts="256k(at91bootstrap),256k(barebox),128k(bareboxenv),384k(bareboxenv2/oftree),1M(dummy),6M(kernel),120M(root),-(data)"
+#nand_parts="256k(bootstrap)ro,512k(uboot)ro,256k(env),256k(env_redundant),256k(spare),512k(dtb),6M(kernel)ro,-(rootfs)"
+#nand_parts="256k(bootstrap)ro,512k(barebox)ro,1280k(env),6M(kernel)ro,16M(rootfs),32M(firmware),-(reserved)"
+#nand_parts="256k(bootstrap)ro,512k(barebox)ro,1280k(env),6M(kernel)ro,16M(rootfs),32M(firmware),32M(backup),-(reserved)"
+#nand_parts="256k(bootstrap),512k(barebox),1280k(env),6M(kernel),16M(rootfs),32M(firmware),32M(backup),-(reserved)"
+nand_parts="256k(bootstrap),512k(barebox),1280k(env),6M(kernel),16M(rootfs),32M(firmware),32M(backup),128k(unconfirmBuf),-(reserved)"
+
+nand_device=atmel_nand
+#rootfs_mtdblock_nand=6
+#rootfs_mtdblock_nand=7
+rootfs_mtdblock_nand=4
+
+# set a fancy prompt (if support is compiled in)
+PS1="\e[1;32mbarebox@\e[1;31m\h:\w\e[0m "

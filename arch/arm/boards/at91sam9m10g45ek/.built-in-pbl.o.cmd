@@ -1,0 +1,1 @@
+cmd_arch/arm/boards/at91sam9m10g45ek/built-in-pbl.o :=  rm -f arch/arm/boards/at91sam9m10g45ek/built-in-pbl.o; /usr/local/arm/buildrootv1/bin/arm-buildroot-linux-uclibcgnueabi-ar rcs arch/arm/boards/at91sam9m10g45ek/built-in-pbl.o

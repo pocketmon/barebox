@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "booting kernel from $kdev"
+
+#go 0x10000040
+bootm $bootm_opt $kdev
